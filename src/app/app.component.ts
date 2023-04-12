@@ -19,6 +19,7 @@ export class AppComponent implements OnInit {
   newRecordValue: any = [];
   pieChartData: any = [];
   totalTimeWorkedByEmployee: number = 0;
+  formatteddataforMultiLineChart: Array<any> = [];
   constructor(private http: HttpClient) {}
   ngOnInit() {
     this.http
@@ -36,10 +37,23 @@ export class AppComponent implements OnInit {
     this.employeeData.forEach((element: any) => {
       if (this.newRecord.includes(element.EmployeeName)) {
         var index = this.newRecord.indexOf(element.EmployeeName);
+        let worklog = [];
+
+        worklog.push(
+          this.getTotalTime(element.StarTimeUtc, element.EndTimeUtc)
+        );
         this.newRecordValue[index] += this.getTotalTime(
           element.StarTimeUtc,
           element.EndTimeUtc
         );
+        this.formatteddataforMultiLineChart.push({
+          name: element.EmployeeName,
+          data: worklog,
+        });
+        // console.log(
+        //   'this.formatteddataforMultiLineChart',
+        //   this.formatteddataforMultiLineChart
+        // );
       } else {
         this.newRecord.push(element.EmployeeName);
         this.newRecordValue.push(
@@ -47,21 +61,20 @@ export class AppComponent implements OnInit {
         );
       }
     });
+    //calculating total percentage
+    this.newRecordValue.forEach((element: number) => {
+      this.totalTimeWorkedByEmployee += element;
+    });
+    //Loopimg through the array to push the name and percentage to pieChartData variable to be used by pie chart
     for (let i = 0; i < this.newRecord.length; i++) {
-      this.totalTimeWorkedByEmployee += this.newRecordValue[i];
       let name = this.newRecord[i];
-      let hoursWorked =
+      let hoursWorkedinPercentage =
         (this.newRecordValue[i] / this.totalTimeWorkedByEmployee) * 100;
-
-      this.pieChartData.push({ name: name ? name : 'unknown', y: hoursWorked });
+      this.pieChartData.push({
+        name: name ? name : 'unknown',
+        y: hoursWorkedinPercentage,
+      });
     }
-    console.log(
-      'formatted data',
-      this.newRecord,
-      this.newRecordValue,
-      this.pieChartData,
-      this.totalTimeWorkedByEmployee
-    );
   }
 
   getTotalTime(startTime: any, endTime: any) {
@@ -111,11 +124,6 @@ export class AppComponent implements OnInit {
       text: null,
     },
 
-    subtitle: {
-      text: 'Source: <a href="https://irecusa.org/programs/solar-jobs-census/" target="_blank">IREC</a>',
-      align: 'left',
-    },
-
     yAxis: {
       title: {
         text: 'Number of Employees',
@@ -123,8 +131,8 @@ export class AppComponent implements OnInit {
     },
 
     xAxis: {
-      accessibility: {
-        rangeDescription: 'Range: 2010 to 2020',
+      title: {
+        text: 'Dates',
       },
     },
 
@@ -194,7 +202,7 @@ export class AppComponent implements OnInit {
       rules: [
         {
           condition: {
-            maxWidth: 500,
+            maxWidth: 1600,
           },
           chartOptions: {
             legend: {
