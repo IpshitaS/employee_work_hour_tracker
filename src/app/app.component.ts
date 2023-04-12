@@ -28,8 +28,10 @@ export class AppComponent implements OnInit {
       )
       .subscribe((data) => {
         if (data) {
+          console.log('data', data);
           this.employeeData = data;
           this.formattedTableData();
+          this.formattedMultilineChartData();
         }
       });
   }
@@ -38,22 +40,10 @@ export class AppComponent implements OnInit {
       if (this.newRecord.includes(element.EmployeeName)) {
         var index = this.newRecord.indexOf(element.EmployeeName);
         let worklog = [];
-
-        worklog.push(
-          this.getTotalTime(element.StarTimeUtc, element.EndTimeUtc)
-        );
         this.newRecordValue[index] += this.getTotalTime(
           element.StarTimeUtc,
           element.EndTimeUtc
         );
-        this.formatteddataforMultiLineChart.push({
-          name: element.EmployeeName,
-          data: worklog,
-        });
-        // console.log(
-        //   'this.formatteddataforMultiLineChart',
-        //   this.formatteddataforMultiLineChart
-        // );
       } else {
         this.newRecord.push(element.EmployeeName);
         this.newRecordValue.push(
@@ -81,6 +71,111 @@ export class AppComponent implements OnInit {
     return Math.floor(
       (new Date(endTime).getTime() - new Date(startTime).getTime()) / 3600000
     );
+  }
+  series: [
+    {
+      name: string;
+      data: any[any];
+    },
+    {
+      name: string;
+      data: any[any];
+    },
+    {
+      name: string;
+      data: any[any];
+    },
+    {
+      name: string;
+      data: any[any];
+    },
+    {
+      name: string;
+      data: any[any];
+    },
+    {
+      name: string;
+      data: any[any];
+    },
+    {
+      name: string;
+      data: any[any];
+    },
+    {
+      name: string;
+      data: any[any];
+    },
+    {
+      name: string;
+      data: any[any];
+    },
+    {
+      name: string;
+      data: any[any];
+    },
+    {
+      name: string;
+      data: any[any];
+    }
+  ] = [
+    {
+      name: 'Abhay Singh',
+      data: [],
+    },
+    {
+      name: 'Tamoy Smith',
+      data: [],
+    },
+    {
+      name: 'Mary Poppins',
+      data: [],
+    },
+    {
+      name: 'Patrick Huthinson',
+      data: [],
+    },
+    {
+      name: 'Kavvay Verma',
+      data: [],
+    },
+    {
+      name: 'John Black',
+      data: [],
+    },
+    {
+      name: 'Tim Perkinson',
+      data: [],
+    },
+    {
+      name: 'Rita Alley',
+      data: [],
+    },
+    {
+      name: 'Raju Sunuwar',
+      data: [],
+    },
+    {
+      name: 'Stewart Malachi',
+      data: [],
+    },
+    {
+      name: 'Unknown',
+      data: [],
+    },
+  ];
+  formattedMultilineChartData() {
+    this.employeeData.forEach((point: any) => {
+      this.series.forEach((seriesItem) => {
+        if (seriesItem.name === point.EmployeeName) {
+          seriesItem.data?.push(
+            // x: point.StarTimeUtc.slice(0,9),
+            // y: this.getTotalTime(point.StarTimeUtc, point.EndTimeUtc)
+            this.getTotalTime(point.StarTimeUtc, point.EndTimeUtc)
+          );
+        }
+      });
+    });
+    console.log('this.series', this.series);
   }
 
   Highcharts = Highcharts;
@@ -150,53 +245,7 @@ export class AppComponent implements OnInit {
         pointStart: 2010,
       },
     },
-
-    series: [
-      {
-        name: 'Installation & Developers',
-        data: [
-          43934, 48656, 65165, 81827, 112143, 142383, 171533, 165174, 155157,
-          161454, 154610,
-        ],
-      },
-      {
-        name: 'Manufacturing',
-        data: [
-          24916, 37941, 29742, 29851, 32490, 30282, 38121, 36885, 33726, 34243,
-          31050,
-        ],
-      },
-      {
-        name: 'Sales & Distribution',
-        data: [
-          11744, 30000, 16005, 19771, 20185, 24377, 32147, 30912, 29243, 29213,
-          25663,
-        ],
-      },
-      {
-        name: 'Operations & Maintenance',
-        data: [
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          11164,
-          11218,
-          10077,
-        ],
-      },
-      {
-        name: 'Other',
-        data: [
-          21908, 5548, 8105, 11248, 8989, 11816, 18274, 17300, 13053, 11906,
-          10073,
-        ],
-      },
-    ],
+    series: this.series,
 
     responsive: {
       rules: [
